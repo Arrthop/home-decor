@@ -53,8 +53,14 @@
     var cW = canvas.width, cH = canvas.height;
     var iW = img.naturalWidth, iH = img.naturalHeight;
     var scale = Math.max(cW / iW, cH / iH);
-    var drawW = iW * scale, drawH = iH * scale;
-    var drawX = (cW - drawW) / 2, drawY = (cH - drawH) / 2;
+    var drawW = iW * scale;
+    var drawH = iH * scale;
+
+    // Correct the 1.13x vertical stretch in the source frames to make the Earth a perfect circle
+    drawH = drawH * 0.88;
+
+    var drawX = (cW - drawW) / 2;
+    var drawY = (cH - drawH) / 2;
     ctx.drawImage(img, drawX, drawY, drawW, drawH);
   }
 
