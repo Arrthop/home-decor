@@ -325,161 +325,196 @@
     }
 
     /* ═══════════════════════════════════════════════════
-       HERO RESPONSIVE — TABLET
+       HERO RESPONSIVE — TABLET (≤1024px)
        ═══════════════════════════════════════════════════ */
     @media (max-width: 1024px) {
       .card-container {
         width: 90vw;
-        max-width: 700px;
-        height: 300px;
+        max-width: 750px;
+        height: 320px;
       }
 
       .card-center {
-        width: 220px;
-        height: 300px;
-        left: calc(50% - 110px);
-        top: calc(50% - 150px);
+        width: 200px;
+        height: 270px;
+        left: calc(50% - 100px);
+        top: calc(50% - 135px);
       }
 
       .card-left {
-        width: 180px;
-        height: 240px;
-        left: calc(50% - 90px);
-        top: calc(50% - 120px);
+        width: 170px;
+        height: 225px;
+        left: calc(50% - 85px);
+        top: calc(50% - 112px);
       }
 
       .card-right {
-        width: 180px;
-        height: 240px;
-        left: calc(50% - 90px);
-        top: calc(50% - 120px);
+        width: 170px;
+        height: 225px;
+        left: calc(50% - 85px);
+        top: calc(50% - 112px);
       }
 
       .card-far-left {
-        width: 150px;
-        height: 200px;
-        left: calc(50% - 75px);
-        top: calc(50% - 100px);
+        width: 140px;
+        height: 190px;
+        left: calc(50% - 70px);
+        top: calc(50% - 95px);
       }
 
       .card-far-right {
-        width: 150px;
-        height: 200px;
-        left: calc(50% - 75px);
-        top: calc(50% - 100px);
+        width: 140px;
+        height: 190px;
+        left: calc(50% - 70px);
+        top: calc(50% - 95px);
       }
 
       .hero-logo {
-        max-width: 320px;
+        max-width: 300px;
       }
     }
 
     /* ═══════════════════════════════════════════════════
-       HERO RESPONSIVE — MOBILE
+       HERO RESPONSIVE — MOBILE (≤768px)
        ═══════════════════════════════════════════════════ */
     @media (max-width: 768px) {
       .hero-section {
-        gap: 15px;
+        gap: 10px;
+        padding: 0 10px;
       }
 
       .card-container {
-        width: 92vw;
-        max-width: 400px;
-        height: 220px;
+        width: 100%;
+        max-width: 100%;
+        height: 45vw;
+        min-height: 180px;
+        max-height: 280px;
       }
 
       .card-center {
-        width: 150px;
-        height: 200px;
-        left: calc(50% - 75px);
-        top: calc(50% - 100px);
+        width: 28vw;
+        height: 38vw;
+        max-width: 140px;
+        max-height: 190px;
+        left: calc(50% - 14vw);
+        top: calc(50% - 19vw);
       }
 
       .card-left {
-        width: 120px;
-        height: 160px;
-        left: calc(50% - 60px);
-        top: calc(50% - 80px);
+        width: 23vw;
+        height: 31vw;
+        max-width: 115px;
+        max-height: 155px;
+        left: calc(50% - 11.5vw);
+        top: calc(50% - 15.5vw);
       }
 
       .card-right {
-        width: 120px;
-        height: 160px;
-        left: calc(50% - 60px);
-        top: calc(50% - 80px);
+        width: 23vw;
+        height: 31vw;
+        max-width: 115px;
+        max-height: 155px;
+        left: calc(50% - 11.5vw);
+        top: calc(50% - 15.5vw);
       }
 
       .card-far-left,
       .card-far-right {
-        width: 100px;
-        height: 135px;
-        left: calc(50% - 50px);
-        top: calc(50% - 67px);
+        width: 19vw;
+        height: 26vw;
+        max-width: 95px;
+        max-height: 130px;
+        left: calc(50% - 9.5vw);
+        top: calc(50% - 13vw);
       }
 
       .hero-logo {
-        max-width: 260px;
+        max-width: min(60vw, 240px);
       }
 
       .welcome-text {
-        font-size: 10px;
-        letter-spacing: 0.25em;
-        margin-bottom: -30px;
+        font-size: clamp(8px, 2.5vw, 12px);
+        letter-spacing: 0.2em;
+        margin-bottom: -25px;
       }
 
       .hero-ambient-glow {
         background:
-          radial-gradient(ellipse 300px 250px at 48% 55%, rgba(145, 128, 91, 0.15), transparent 70%),
-          radial-gradient(ellipse 250px 200px at 54% 45%, rgba(75, 78, 73, 0.1), transparent 65%);
+          radial-gradient(ellipse 60vw 40vh at 50% 50%, rgba(145, 128, 91, 0.12), transparent 70%);
+      }
+
+      .scroll-hint {
+        bottom: 20px;
+      }
+
+      .scroll-line {
+        height: 30px;
+      }
+
+      .scroll-text {
+        font-size: 9px;
+        letter-spacing: 3px;
       }
     }
 
     /* ═══════════════════════════════════════════════════
-       HERO RESPONSIVE — SMALL MOBILE
+       HERO RESPONSIVE — SMALL MOBILE (≤480px)
        ═══════════════════════════════════════════════════ */
     @media (max-width: 480px) {
+      .hero-section {
+        gap: 5px;
+      }
+
       .card-container {
-        width: 95vw;
-        max-width: 320px;
-        height: 180px;
+        height: 50vw;
+        min-height: 160px;
+        max-height: 220px;
       }
 
       .card-center {
-        width: 120px;
-        height: 165px;
-        left: calc(50% - 60px);
-        top: calc(50% - 82px);
+        width: 26vw;
+        height: 35vw;
+        max-width: 110px;
+        max-height: 150px;
+        left: calc(50% - 13vw);
+        top: calc(50% - 17.5vw);
       }
 
       .card-left {
-        width: 100px;
-        height: 135px;
-        left: calc(50% - 50px);
-        top: calc(50% - 67px);
+        width: 21vw;
+        height: 28vw;
+        max-width: 90px;
+        max-height: 120px;
+        left: calc(50% - 10.5vw);
+        top: calc(50% - 14vw);
       }
 
       .card-right {
-        width: 100px;
-        height: 135px;
-        left: calc(50% - 50px);
-        top: calc(50% - 67px);
+        width: 21vw;
+        height: 28vw;
+        max-width: 90px;
+        max-height: 120px;
+        left: calc(50% - 10.5vw);
+        top: calc(50% - 14vw);
       }
 
       .card-far-left,
       .card-far-right {
-        width: 80px;
-        height: 110px;
-        left: calc(50% - 40px);
-        top: calc(50% - 55px);
+        width: 17vw;
+        height: 23vw;
+        max-width: 75px;
+        max-height: 100px;
+        left: calc(50% - 8.5vw);
+        top: calc(50% - 11.5vw);
       }
 
       .hero-logo {
-        max-width: 200px;
+        max-width: min(55vw, 200px);
       }
 
       .welcome-text {
-        font-size: 8px;
-        margin-bottom: -25px;
+        font-size: clamp(7px, 2vw, 10px);
+        margin-bottom: -20px;
       }
     }
   </style>
@@ -569,7 +604,7 @@
   </section>
 
   <!-- Spacer to preserve the exact fixed 550vh intro scroll distance -->
-  <div class="intro-scroll-spacer" style="height: 550vh;"></div>
+  <div class="intro-scroll-spacer"></div>
 
   <!-- Slide-over main content container -->
   <main id="main-content" class="main-content">

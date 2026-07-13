@@ -56,10 +56,12 @@
 
   function handleScrollUpdate() {
     var scrollTop = window.scrollY || document.documentElement.scrollTop;
+    var vw = window.innerWidth;
+    var isMobile = vw <= 768;
     
-    // 1. Scrub Phase
-    var SCRUB_HEIGHT = window.innerHeight * 2.5; // Video animation duration
-    var SPREAD_HEIGHT = window.innerHeight * 1.5; // Card spread duration
+    // 1. Scrub Phase — shorter scroll on mobile for faster animation
+    var SCRUB_HEIGHT = isMobile ? window.innerHeight * 1.8 : window.innerHeight * 2.5;
+    var SPREAD_HEIGHT = isMobile ? window.innerHeight * 1.0 : window.innerHeight * 1.5;
 
     var scrubProgress = Math.min(scrollTop / SCRUB_HEIGHT, 1);
     var frameIndex = Math.floor(scrubProgress * (FRAME_COUNT - 1));
@@ -80,29 +82,51 @@
     var ease = 1 - Math.pow(1 - spreadProgress, 3);
 
     // Fade and translate the branding
-    // Because it's natively centered in Flexbox now, we only need translateY
+    var brandingShift = isMobile ? 20 : 40;
     branding.style.opacity = ease;
-    branding.style.transform = `translateY(${40 * (1 - ease)}px)`;
+    branding.style.transform = `translateY(${brandingShift * (1 - ease)}px)`;
 
-    // Vast, expansive spread for the cards — responsive
-    var vw = window.innerWidth;
-    var spreadLeft = Math.min(300, vw * 0.22);
-    var spreadFarLeft = Math.min(560, vw * 0.38);
-    var rotLeft = vw < 768 ? -5 : -8;
-    var rotRight = vw < 768 ? 4 : 6;
-    var rotFarLeft = vw < 768 ? -8 : -14;
-    var rotFarRight = vw < 768 ? 7 : 11;
+    // Card spread — proportional to viewport width
+    var spreadNear, spreadFar;
+    var rotL, rotR, rotFL, rotFR;
+    var yNearL, yNearR, yFarL, yFarR;
 
-    cardLeft.style.transform = `rotate(${rotLeft * ease}deg) translateX(${-spreadLeft * ease}px) translateY(${25 * ease}px)`;
+    if (vw <= 480) {
+      // Small mobile
+      spreadNear = vw * 0.18;
+      spreadFar = vw * 0.30;
+      rotL = -3; rotR = 3; rotFL = -5; rotFR = 5;
+      yNearL = 10; yNearR = 8; yFarL = 15; yFarR = 12;
+    } else if (vw <= 768) {
+      // Mobile
+      spreadNear = vw * 0.20;
+      spreadFar = vw * 0.34;
+      rotL = -4; rotR = 4; rotFL = -7; rotFR = 6;
+      yNearL = 15; yNearR = 10; yFarL = 25; yFarR = 20;
+    } else if (vw <= 1024) {
+      // Tablet
+      spreadNear = vw * 0.22;
+      spreadFar = vw * 0.36;
+      rotL = -6; rotR = 5; rotFL = -10; rotFR = 9;
+      yNearL = 20; yNearR = 12; yFarL = 30; yFarR = 28;
+    } else {
+      // Desktop
+      spreadNear = 300;
+      spreadFar = 560;
+      rotL = -8; rotR = 6; rotFL = -14; rotFR = 11;
+      yNearL = 25; yNearR = 15; yFarL = 40; yFarR = 35;
+    }
+
+    cardLeft.style.transform = `rotate(${rotL * ease}deg) translateX(${-spreadNear * ease}px) translateY(${yNearL * ease}px)`;
     cardLeft.style.opacity = 0.4 + (0.48 * ease);
 
-    cardRight.style.transform = `rotate(${rotRight * ease}deg) translateX(${spreadLeft * ease}px) translateY(${15 * ease}px)`;
+    cardRight.style.transform = `rotate(${rotR * ease}deg) translateX(${spreadNear * ease}px) translateY(${yNearR * ease}px)`;
     cardRight.style.opacity = 0.4 + (0.48 * ease);
 
-    cardFarLeft.style.transform = `rotate(${rotFarLeft * ease}deg) translateX(${-spreadFarLeft * ease}px) translateY(${40 * ease}px)`;
+    cardFarLeft.style.transform = `rotate(${rotFL * ease}deg) translateX(${-spreadFar * ease}px) translateY(${yFarL * ease}px)`;
     cardFarLeft.style.opacity = 0.1 + (0.55 * ease);
 
-    cardFarRight.style.transform = `rotate(${rotFarRight * ease}deg) translateX(${spreadFarLeft * ease}px) translateY(${35 * ease}px)`;
+    cardFarRight.style.transform = `rotate(${rotFR * ease}deg) translateX(${spreadFar * ease}px) translateY(${yFarR * ease}px)`;
     cardFarRight.style.opacity = 0.1 + (0.55 * ease);
 
     if (spreadProgress >= 1) {

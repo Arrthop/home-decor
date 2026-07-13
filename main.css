@@ -75,6 +75,10 @@
   --accent-olive: #4b4e49;
 }
 
+.intro-scroll-spacer {
+  height: 550vh;
+}
+
 html {
   scroll-behavior: smooth;
 }
@@ -702,6 +706,10 @@ button,
    RESPONSIVE — TABLET (≤1024px)
    ═══════════════════════════════════════════════════ */
 @media (max-width: 1024px) {
+  .intro-scroll-spacer {
+    height: 450vh;
+  }
+
   .container {
     padding: 80px 20px;
   }
@@ -735,6 +743,10 @@ button,
    RESPONSIVE — MOBILE (≤768px)
    ═══════════════════════════════════════════════════ */
 @media (max-width: 768px) {
+  .intro-scroll-spacer {
+    height: 380vh;
+  }
+
   /* --- Navigation --- */
   .nav-hamburger {
     display: flex;
