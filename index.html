@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Home Decor — Premium interior design and lifestyle">
+  <title>Home Decor</title>
+  <link rel="stylesheet" href="main.css">
+
+  <style>
+    /* ═══════════════════════════════════════════════════
+       BASE STYLES
+       ═══════════════════════════════════════════════════ */
+    *,
+    *::before,
+    *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      background: #000;
+      scrollbar-width: none;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    body::-webkit-scrollbar {
+      display: none;
+    }
+
+    /* ═══════════════════════════════════════════════════
+       CANVAS
+       ═══════════════════════════════════════════════════ */
+    .hero-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 10;
+      display: block;
+      pointer-events: none;
+      background: #000;
+    }
+
+    /* ═══════════════════════════════════════════════════
+       HERO SECTION (Pinned Flexbox Layout)
+       ═══════════════════════════════════════════════════ */
+    .hero-section {
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 5;
+      width: 100%;
+      height: 100vh;
+      background: #000;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 30px;
+      /* Absolutely prevents logo and cards from overlapping */
+    }
+
+    /* ═══════════════════════════════════════════════════
+       AMBIENT GLOW
+       ═══════════════════════════════════════════════════ */
+    .hero-ambient-glow {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background:
+        radial-gradient(ellipse 650px 450px at 48% 55%, rgba(145, 128, 91, 0.15), transparent 70%),
+        radial-gradient(ellipse 500px 350px at 54% 45%, rgba(75, 78, 73, 0.1), transparent 65%);
+      z-index: 0;
+      pointer-events: none;
+      animation: glowBreath 8s ease-in-out infinite;
+    }
+
+    @keyframes glowBreath {
+
+      0%,
+      100% {
+        opacity: 0.85;
+        transform: scale(1);
+      }
+
+      50% {
+        opacity: 1;
+        transform: scale(1.03);
+      }
+    }
+
+    /* ═══════════════════════════════════════════════════
+       BRANDING
+       ═══════════════════════════════════════════════════ */
+    .hero-branding {
+      text-align: center;
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+      /* Very tight spacing to pull welcome text closer to logo */
+      opacity: 0;
+      /* Animated by JS */
+      will-change: opacity, transform;
+    }
+
+    .welcome-text {
+      display: block;
+      font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica, sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.8);
+      margin-bottom: -40px;
+      /* Pulls text down over the logo's transparent padding */
+      position: relative;
+      z-index: 2;
+    }
+
+    .hero-logo {
+      width: 100%;
+      max-width: 440px;
+      /* Big, robust logo size */
+      height: auto;
+      filter: brightness(1.2) drop-shadow(0 0 30px rgba(255, 255, 255, 0.1));
+      display: block;
+    }
+
+    /* ═══════════════════════════════════════════════════
+       CARDS BASE
+       ═══════════════════════════════════════════════════ */
+    .card-container {
+      position: relative;
+      width: 1000px;
+      height: 400px;
+      /* Matched to new center card height */
+      z-index: 1;
+    }
+
+    .hero-section.spread-done .card-container {
+      animation: gentleFloat 6s ease-in-out infinite;
+    }
+
+    @keyframes gentleFloat {
+
+      0%,
+      100% {
+        transform: translateY(0);
+      }
+
+      50% {
+        transform: translateY(-7px);
+      }
+    }
+
+    .card {
+      position: absolute;
+      will-change: transform, opacity;
+    }
+
+    .hover-wrapper {
+      width: 100%;
+      height: 100%;
+      border-radius: 4px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.6s ease;
+      will-change: transform;
+      background: #111;
+    }
+
+    .hover-wrapper::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.03) 0%, transparent 100%);
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    .hover-wrapper img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0.9;
+      transition: opacity 0.6s ease;
+    }
+
+    .hover-wrapper:hover img {
+      opacity: 1;
+    }
+
+    /* Initial Layout */
+    .card-center {
+      width: 300px;
+      height: 400px;
+      left: calc(50% - 150px);
+      top: calc(50% - 200px);
+      z-index: 5;
+    }
+
+    .card-left {
+      width: 250px;
+      height: 320px;
+      left: calc(50% - 125px);
+      top: calc(50% - 160px);
+      z-index: 3;
+    }
+
+    .card-right {
+      width: 250px;
+      height: 320px;
+      left: calc(50% - 125px);
+      top: calc(50% - 160px);
+      z-index: 3;
+    }
+
+    .card-far-left {
+      width: 210px;
+      height: 280px;
+      left: calc(50% - 105px);
+      top: calc(50% - 140px);
+      z-index: 1;
+    }
+
+    .card-far-right {
+      width: 210px;
+      height: 280px;
+      left: calc(50% - 105px);
+      top: calc(50% - 140px);
+      z-index: 1;
+    }
+
+    /* Hover States */
+    .card-center .hover-wrapper {
+      box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5);
+    }
+
+    .card-left .hover-wrapper,
+    .card-right .hover-wrapper {
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+    }
+
+    .card-far-left .hover-wrapper,
+    .card-far-right .hover-wrapper {
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    }
+
+    .hero-section.spread-done .card-center:hover .hover-wrapper {
+      transform: scale(1.02);
+      box-shadow: 0 40px 80px rgba(0, 0, 0, 0.7);
+    }
+
+    .hero-section.spread-done .card-left:hover .hover-wrapper {
+      transform: scale(1.03) rotate(-1deg);
+    }
+
+    .hero-section.spread-done .card-right:hover .hover-wrapper {
+      transform: scale(1.03) rotate(1deg);
+    }
+
+    .hero-section.spread-done .card-far-left:hover .hover-wrapper {
+      transform: scale(1.02) rotate(-1deg);
+    }
+
+    .hero-section.spread-done .card-far-right:hover .hover-wrapper {
+      transform: scale(1.02) rotate(1deg);
+    }
+
+    /* ═══════════════════════════════════════════════════
+       SCROLL HINT
+       ═══════════════════════════════════════════════════ */
+    .scroll-hint {
+      position: absolute;
+      bottom: 32px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      z-index: 2;
+    }
+
+    .scroll-line {
+      width: 1px;
+      height: 48px;
+      background: linear-gradient(to bottom, transparent, rgba(255, 255, 255, 0.3), transparent);
+      animation: scrollPulse 2.5s infinite ease-in-out;
+    }
+
+    @keyframes scrollPulse {
+
+      0%,
+      100% {
+        opacity: 0.1;
+        transform: scaleY(0.85);
+      }
+
+      50% {
+        opacity: 0.6;
+        transform: scaleY(1);
+      }
+    }
+
+    .scroll-text {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 11px;
+      font-weight: 300;
+      letter-spacing: 5px;
+      color: rgba(255, 255, 255, 0.22);
+      text-transform: uppercase;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Custom Interactive Cursor -->
+  <div class="custom-cursor" id="customCursor"></div>
+
+  <!-- Liquid Glass Header Navigation -->
+  <header class="glass-nav" id="glassNav">
+    <div class="nav-container">
+      <a href="#" class="nav-brand">
+        <img src="Logo.png" alt="Home Decor"
+          style="height: 25px; transform: scale(3.5); transform-origin: left center;">
+      </a>
+      <nav class="nav-links">
+        <a href="#about">About</a>
+        <a href="#collections">Collections</a>
+        <a href="#inquiry" class="nav-btn">Enquire Now</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Intro Sections (Canvas & Hero) -->
+  <canvas class="hero-canvas" id="heroCanvas"></canvas>
+
+  <!-- Hero Section -->
+  <section class="hero-section" id="heroSection">
+    <div class="hero-ambient-glow"></div>
+
+    <!-- Branding -->
+    <div class="hero-branding">
+      <span class="welcome-text">Welcome to</span>
+      <img class="hero-logo" src="Logo.png" alt="Home Decor">
+    </div>
+
+    <!-- Card Gallery -->
+    <div class="card-container">
+      <!-- Far left -->
+      <div class="card card-far-left">
+        <div class="hover-wrapper">
+          <img src="untitled%20folder/Screenshot%202026-07-01%20at%2011.10.14%E2%80%AFAM.png"
+            onerror="this.onerror=null;this.src=this.src.replace(/%E2%80%AF/g,'%20')" alt="">
+        </div>
+      </div>
+      <!-- Left -->
+      <div class="card card-left">
+        <div class="hover-wrapper">
+          <img src="untitled%20folder/Screenshot%202026-07-01%20at%2011.10.18%E2%80%AFAM.png"
+            onerror="this.onerror=null;this.src=this.src.replace(/%E2%80%AF/g,'%20')" alt="">
+        </div>
+      </div>
+      <!-- Center -->
+      <div class="card card-center">
+        <div class="hover-wrapper">
+          <img src="untitled%20folder/Screenshot%202026-07-01%20at%2011.10.09%E2%80%AFAM.png"
+            onerror="this.onerror=null;this.src=this.src.replace(/%E2%80%AF/g,'%20')" alt="">
+        </div>
+      </div>
+      <!-- Right -->
+      <div class="card card-right">
+        <div class="hover-wrapper">
+          <img src="untitled%20folder/Screenshot%202026-07-01%20at%2011.10.25%E2%80%AFAM.png"
+            onerror="this.onerror=null;this.src=this.src.replace(/%E2%80%AF/g,'%20')" alt="">
+        </div>
+      </div>
+      <!-- Far right -->
+      <div class="card card-far-right">
+        <div class="hover-wrapper">
+          <img src="untitled%20folder/Screenshot%202026-07-01%20at%2011.10.29%E2%80%AFAM.png"
+            onerror="this.onerror=null;this.src=this.src.replace(/%E2%80%AF/g,'%20')" alt="">
+        </div>
+      </div>
+    </div>
+
+    <!-- Scroll Hint -->
+    <div class="scroll-hint">
+      <div class="scroll-line"></div>
+      <span class="scroll-text">scroll</span>
+    </div>
+  </section>
+
+  <!-- Spacer to preserve the exact fixed 550vh intro scroll distance -->
+  <div class="intro-scroll-spacer" style="height: 550vh;"></div>
+
+  <!-- Slide-over main content container -->
+  <main id="main-content" class="main-content">
+
+    <!-- Infinite Marquee -->
+    <div class="marquee-container">
+      <div class="marquee-content">
+        <span>PREMIUM ARCHITECTURAL MATERIALS ✦</span>
+        <span>CRAFTING UNIQUE SPACES ✦</span>
+        <span>GLOBAL SOURCING ✦</span>
+        <span>TIMELESS DESIGN ✦</span>
+        <span>PREMIUM ARCHITECTURAL MATERIALS ✦</span>
+        <span>CRAFTING UNIQUE SPACES ✦</span>
+        <span>GLOBAL SOURCING ✦</span>
+        <span>TIMELESS DESIGN ✦</span>
+      </div>
+    </div>
+
+    <!-- About Section -->
+    <section class="about-section scroll-reveal" id="about">
+      <div class="container">
+        <h2 class="section-title">Crafting Unique Spaces <br>Since 2011</h2>
+        <p class="section-desc">
+          Home Decor was established in 2011 with the vision of introducing innovative architectural materials to the
+          market. Since its inception, the company has continuously sourced and curated extraordinary materials from
+          around the world, ensuring customers have access to unique products that combine quality, durability, and
+          timeless design.
+        </p>
+        <p class="section-desc">
+          Today, Home Decor has earned a reputation for supplying uncommon architectural materials that enable
+          architects, interior designers, builders, and homeowners to create distinctive and memorable spaces.
+        </p>
+
+        <div class="stats-grid">
+          <div class="stat-item">
+            <span class="stat-number" data-target="2011">0</span>
+            <span class="stat-label">Established</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-number" data-target="40">+</span>
+            <span class="stat-label">Countries Sourced</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-number" data-target="5000">+</span>
+            <span class="stat-label">Premium Products</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-number" data-target="100">%</span>
+            <span class="stat-label">Trusted by Architects</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Philosophy Section -->
+    <section class="philosophy-section scroll-reveal" id="philosophy">
+      <div class="parallax-bg"
+        style="background-image: url('untitled%20folder/Screenshot%202026-07-01%20at%2011.10.09%E2%80%AFAM.png');">
+      </div>
+      <div class="texture-bg"></div>
+      <div class="container">
+        <h1 class="philosophy-statement">"Extraordinary spaces begin with extraordinary materials."</h1>
+        <p class="philosophy-desc">Our passion lies in discovering exceptional architectural materials from around the
+          world and making them available to designers seeking to create spaces that stand apart. Every collection is
+          carefully curated to inspire creativity, elevate design, and deliver lasting quality.</p>
+      </div>
+    </section>
+
+    <!-- Product Collections -->
+    <section class="collections-section" id="collections">
+      <div class="container">
+        <h2 class="section-title scroll-reveal">Product Collections</h2>
+
+        <div class="collections-grid">
+          <!-- Row 1 -->
+          <div class="collection-card span-3 scroll-reveal">
+            <div class="card-img-wrapper"><img
+                src="untitled%20folder/Screenshot%202026-07-01%20at%2011.10.09%E2%80%AFAM.png"
+                onerror="this.onerror=null;this.src=this.src.replace(/%E2%80%AF/g,'%20')" class="placeholder-img"
+                alt="Wooden Floor"></div>
+            <div class="card-label">WOODEN FLOOR</div>
+          </div>
+          <div class="collection-card span-3 scroll-reveal" style="transition-delay: 0.1s;">
+            <div class="card-img-wrapper"><img
+                src="missing%20images/fluted_wall_panels.png"
+                class="placeholder-img"
+                alt="Fluted Wall Panels"></div>
+            <div class="card-label">FLUTED WALL PANELS</div>
+          </div>
+          <div class="collection-card span-3 scroll-reveal" style="transition-delay: 0.2s;">
+            <div class="card-img-wrapper"><img
+                src="missing%20images/curtains_sheers.png"
+                class="placeholder-img"
+                alt="Curtains & Sheers"></div>
+            <div class="card-label">CURTAINS & SHEERS</div>
+          </div>
+          <div class="collection-card span-3 scroll-reveal" style="transition-delay: 0.3s;">
+            <div class="card-img-wrapper"><img
+                src="untitled%20folder/Screenshot%202026-07-01%20at%2011.10.14%E2%80%AFAM.png"
+                onerror="this.onerror=null;this.src=this.src.replace(/%E2%80%AF/g,'%20')" class="placeholder-img"
+                alt="Upholstery Fabric"></div>
+            <div class="card-label">UPHOLSTERY FABRIC</div>
+          </div>
+
+          <!-- Row 2 -->
+          <div class="collection-card span-3 scroll-reveal">
+            <div class="card-img-wrapper"><img
+                src="missing%20images/italian_mattress.png"
+                class="placeholder-img"
+                alt="Italian Mattress"></div>
+            <div class="card-label">ITALIAN MATTRESS</div>
+          </div>
+          <div class="collection-card span-3 scroll-reveal" style="transition-delay: 0.1s;">
+            <div class="card-img-wrapper"><img
+                src="missing%20images/wall_papers.png"
+                class="placeholder-img"
+                alt="Wall Papers"></div>
+            <div class="card-label">WALL PAPERS</div>
+          </div>
+          <div class="collection-card span-3 scroll-reveal" style="transition-delay: 0.2s;">
+            <div class="card-img-wrapper"><img
+                src="missing%20images/blinds.png"
+                class="placeholder-img"
+                alt="Blinds"></div>
+            <div class="card-label">BLINDS</div>
+          </div>
+          <div class="collection-card span-3 scroll-reveal" style="transition-delay: 0.3s;">
+            <div class="card-img-wrapper"><img
+                src="untitled%20folder/Screenshot%202026-07-01%20at%2011.10.05%E2%80%AFAM.png"
+                onerror="this.onerror=null;this.src=this.src.replace(/%E2%80%AF/g,'%20')" class="placeholder-img"
+                alt="Carpets"></div>
+            <div class="card-label">CARPETS<br><span style="font-size:0.7em">(WALL TO WALL)</span></div>
+          </div>
+
+          <!-- Row 3 -->
+          <div class="collection-card span-3 scroll-reveal">
+            <div class="card-img-wrapper"><img
+                src="untitled%20folder/Screenshot%202026-07-01%20at%2011.10.18%E2%80%AFAM.png"
+                onerror="this.onerror=null;this.src=this.src.replace(/%E2%80%AF/g,'%20')" class="placeholder-img"
+                alt="Exterior Wooden Cladding"></div>
+            <div class="card-label">EXTERIOR<br>WOODEN CLADDING</div>
+          </div>
+          <div class="collection-card span-3 scroll-reveal" style="transition-delay: 0.1s;">
+            <div class="card-img-wrapper"><img
+                src="untitled%20folder/Screenshot%202026-07-01%20at%2011.10.25%E2%80%AFAM.png"
+                onerror="this.onerror=null;this.src=this.src.replace(/%E2%80%AF/g,'%20')" class="placeholder-img"
+                alt="Exterior Wooden Deck Floor"></div>
+            <div class="card-label">EXTERIOR<br>WOODEN DECK FLOOR</div>
+          </div>
+          <div class="collection-card span-3 scroll-reveal" style="transition-delay: 0.2s;">
+            <div class="card-img-wrapper"><img
+                src="untitled%20folder/Screenshot%202026-07-01%20at%2011.10.29%E2%80%AFAM.png"
+                onerror="this.onerror=null;this.src=this.src.replace(/%E2%80%AF/g,'%20')" class="placeholder-img"
+                alt="Exterior Wooden Louvers"></div>
+            <div class="card-label">EXTERIOR<br>WOODEN LOUVERS</div>
+          </div>
+          <div class="collection-card span-3 scroll-reveal" style="transition-delay: 0.3s;">
+            <div class="card-img-wrapper"><img
+                src="untitled%20folder/Screenshot%202026-07-01%20at%2011.10.00%E2%80%AFAM.png"
+                onerror="this.onerror=null;this.src=this.src.replace(/%E2%80%AF/g,'%20')" class="placeholder-img"
+                alt="Treads & Risers"></div>
+            <div class="card-label">TREADS & RISERS</div>
+          </div>
+
+          <!-- Row 4 -->
+          <div class="collection-card span-4 scroll-reveal">
+            <div class="card-img-wrapper"><img
+                src="untitled%20folder/Screenshot%202026-07-01%20at%2011.09.37%E2%80%AFAM.png"
+                onerror="this.onerror=null;this.src=this.src.replace(/%E2%80%AF/g,'%20')" class="placeholder-img"
+                alt="Gym Floor"></div>
+            <div class="card-label">GYM FLOOR</div>
+          </div>
+          <div class="collection-card span-4 scroll-reveal" style="transition-delay: 0.1s;">
+            <div class="card-img-wrapper"><img
+                src="untitled%20folder/Screenshot%202026-07-01%20at%2011.09.56%E2%80%AFAM.png"
+                onerror="this.onerror=null;this.src=this.src.replace(/%E2%80%AF/g,'%20')" class="placeholder-img"
+                alt="Sports Floor"></div>
+            <div class="card-label">SPORTS FLOOR</div>
+          </div>
+          <div class="collection-card span-4 scroll-reveal" style="transition-delay: 0.2s;">
+            <div class="card-img-wrapper"><img
+                src="untitled%20folder/Screenshot%202026-07-01%20at%2011.09.53%E2%80%AFAM.png"
+                onerror="this.onerror=null;this.src=this.src.replace(/%E2%80%AF/g,'%20')" class="placeholder-img"
+                alt="SPC Flooring"></div>
+            <div class="card-label">SPC FLOORING</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Why Choose Us -->
+    <section class="why-us-section" id="why-us">
+      <div class="container">
+        <h2 class="section-title scroll-reveal">Why Choose Home Decor</h2>
+        <div class="why-us-grid">
+          <div class="why-card scroll-reveal">Global sourcing of architectural materials</div>
+          <div class="why-card scroll-reveal" style="transition-delay: 0.1s;">Carefully curated premium collections
+          </div>
+          <div class="why-card scroll-reveal" style="transition-delay: 0.2s;">Rare and exclusive products</div>
+          <div class="why-card scroll-reveal">Trusted by architects & interior designers</div>
+          <div class="why-card scroll-reveal" style="transition-delay: 0.1s;">High-quality craftsmanship</div>
+          <div class="why-card scroll-reveal" style="transition-delay: 0.2s;">Residential and commercial expertise</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Industries We Serve -->
+    <section class="industries-section" id="industries">
+      <div class="container">
+        <h2 class="section-title scroll-reveal">Industries We Serve</h2>
+        <div class="industries-grid">
+          <div class="industry-item scroll-reveal">Luxury Residences</div>
+          <div class="industry-item scroll-reveal">Villas & Apartments</div>
+          <div class="industry-item scroll-reveal">Commercial Offices</div>
+          <div class="industry-item scroll-reveal">Hotels & Hospitality</div>
+          <div class="industry-item scroll-reveal">Restaurants & Retail</div>
+          <div class="industry-item scroll-reveal">Educational & Sports Facilities</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Customer Experience Timeline -->
+    <section class="timeline-section" id="timeline">
+      <div class="container">
+        <h2 class="section-title scroll-reveal">The Customer Experience</h2>
+        <div class="timeline">
+          <div class="timeline-step scroll-reveal">
+            <span class="step-num">01</span>
+            <h4>Discovery</h4>
+          </div>
+          <div class="timeline-step scroll-reveal">
+            <span class="step-num">02</span>
+            <h4>Consultation</h4>
+          </div>
+          <div class="timeline-step scroll-reveal">
+            <span class="step-num">03</span>
+            <h4>Material Selection</h4>
+          </div>
+          <div class="timeline-step scroll-reveal">
+            <span class="step-num">04</span>
+            <h4>Project Planning</h4>
+          </div>
+          <div class="timeline-step scroll-reveal">
+            <span class="step-num">05</span>
+            <h4>Delivery & Installation</h4>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Inquiry Form Section -->
+    <section class="inquiry-section scroll-reveal" id="inquiry">
+      <div class="container">
+        <div class="inquiry-box">
+          <h2 class="section-title">Project Inquiry</h2>
+          <p class="section-desc">Have a specific project in mind? Reach out to our design consultants.</p>
+          <form class="inquiry-form" id="inquiryForm" action="#" method="POST">
+            <div class="form-row">
+              <input type="text" name="name" placeholder="Your Name" required>
+              <input type="email" name="email" placeholder="Your Email" required>
+            </div>
+            <input type="text" name="subject" placeholder="Subject / Project Type">
+            <textarea name="message" rows="5" placeholder="How can we help you?" required></textarea>
+            <button type="submit" class="btn-primary submit-btn">Submit Inquiry</button>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- Contact & Footer -->
+    <footer class="footer-section scroll-reveal" id="contact">
+      <div class="container footer-content">
+        <div class="footer-brand">
+          <img src="Logo.png" alt="Home Decor" class="footer-logo-img">
+          <p>Premium interior design and lifestyle.</p>
+        </div>
+        <div class="footer-contact">
+          <h3>Contact Us</h3>
+          <p class="phone">+91 9890191919</p>
+          <div class="cta-group">
+            <a href="tel:+919890191919" class="btn-primary">Call Now</a>
+            <a href="#inquiry" class="btn-secondary">Inquiry Form</a>
+            <a href="https://wa.me/919890191919" target="_blank" class="btn-secondary whatsapp-btn">WhatsApp</a>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; Krasis: Creators of this website, contactkrasis@gmail.com for more info</p>
+        <button class="back-to-top" id="backToTop">Back to Top</button>
+      </div>
+    </footer>
+  </main>
+
+  <script src="hero-scrub.js"></script>
+  <script src="main.js"></script>
+</body>
+
+</html>
