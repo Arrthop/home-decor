@@ -34,8 +34,12 @@
   requestAnimationFrame(handleScrollUpdate);
 
   function resizeCanvas() {
-    canvas.width = canvas.clientWidth;
-    canvas.height = canvas.clientHeight;
+    var w = window.innerWidth;
+    var h = window.innerHeight;
+    canvas.width = w;
+    canvas.height = h;
+    canvas.style.width = w + "px";
+    canvas.style.height = h + "px";
     handleScrollUpdate();
   }
   resizeCanvas();
@@ -93,14 +97,14 @@
 
     if (vw <= 480) {
       // Small mobile
-      spreadNear = vw * 0.20;
-      spreadFar = vw * 0.37;
+      spreadNear = vw * 0.17;
+      spreadFar = vw * 0.31;
       rotL = -3; rotR = 3; rotFL = -5; rotFR = 5;
       yNearL = 10; yNearR = 8; yFarL = 15; yFarR = 12;
     } else if (vw <= 768) {
       // Mobile
-      spreadNear = vw * 0.22;
-      spreadFar = vw * 0.40;
+      spreadNear = vw * 0.18;
+      spreadFar = vw * 0.33;
       rotL = -4; rotR = 4; rotFL = -7; rotFR = 6;
       yNearL = 15; yNearR = 10; yFarL = 25; yFarR = 20;
     } else if (vw <= 1024) {
