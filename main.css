@@ -927,19 +927,40 @@ button,
   .footer-content {
     flex-direction: column;
     gap: 40px;
+    align-items: center;
+    text-align: center;
   }
 
-  .footer-contact .phone {
-    font-size: 1.5rem;
+  .footer-brand {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .footer-logo-img {
+    margin: 0 auto 15px auto;
+  }
+
+  .footer-contact {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
   }
 
   .cta-group {
     flex-direction: column;
+    gap: 12px;
+    width: 100%;
+    max-width: 320px;
+    margin: 0 auto;
   }
 
   .cta-group a,
   .cta-group button {
     text-align: center;
+    width: 100%;
   }
 
   .footer-bottom {
