@@ -84,17 +84,25 @@
     branding.style.opacity = ease;
     branding.style.transform = `translateY(${40 * (1 - ease)}px)`;
 
-    // Vast, expansive spread for the cards
-    cardLeft.style.transform = `rotate(${-8 * ease}deg) translateX(${-300 * ease}px) translateY(${25 * ease}px)`;
+    // Vast, expansive spread for the cards — responsive
+    var vw = window.innerWidth;
+    var spreadLeft = Math.min(300, vw * 0.22);
+    var spreadFarLeft = Math.min(560, vw * 0.38);
+    var rotLeft = vw < 768 ? -5 : -8;
+    var rotRight = vw < 768 ? 4 : 6;
+    var rotFarLeft = vw < 768 ? -8 : -14;
+    var rotFarRight = vw < 768 ? 7 : 11;
+
+    cardLeft.style.transform = `rotate(${rotLeft * ease}deg) translateX(${-spreadLeft * ease}px) translateY(${25 * ease}px)`;
     cardLeft.style.opacity = 0.4 + (0.48 * ease);
 
-    cardRight.style.transform = `rotate(${6 * ease}deg) translateX(${300 * ease}px) translateY(${15 * ease}px)`;
+    cardRight.style.transform = `rotate(${rotRight * ease}deg) translateX(${spreadLeft * ease}px) translateY(${15 * ease}px)`;
     cardRight.style.opacity = 0.4 + (0.48 * ease);
 
-    cardFarLeft.style.transform = `rotate(${-14 * ease}deg) translateX(${-560 * ease}px) translateY(${40 * ease}px)`;
+    cardFarLeft.style.transform = `rotate(${rotFarLeft * ease}deg) translateX(${-spreadFarLeft * ease}px) translateY(${40 * ease}px)`;
     cardFarLeft.style.opacity = 0.1 + (0.55 * ease);
 
-    cardFarRight.style.transform = `rotate(${11 * ease}deg) translateX(${560 * ease}px) translateY(${35 * ease}px)`;
+    cardFarRight.style.transform = `rotate(${rotFarRight * ease}deg) translateX(${spreadFarLeft * ease}px) translateY(${35 * ease}px)`;
     cardFarRight.style.opacity = 0.1 + (0.55 * ease);
 
     if (spreadProgress >= 1) {

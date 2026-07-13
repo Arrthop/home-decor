@@ -111,10 +111,12 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   /* ═══════════════════════════════════════════════════
-     CUSTOM INTERACTIVE CURSOR
+     CUSTOM INTERACTIVE CURSOR (Desktop only)
      ═══════════════════════════════════════════════════ */
+  const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
   const cursor = document.getElementById('customCursor');
-  if (cursor) {
+
+  if (cursor && !isTouchDevice) {
     document.addEventListener('mousemove', (e) => {
       cursor.style.left = e.clientX + 'px';
       cursor.style.top = e.clientY + 'px';
@@ -125,6 +127,29 @@ document.addEventListener('DOMContentLoaded', () => {
     interactiveElements.forEach(el => {
       el.addEventListener('mouseenter', () => cursor.classList.add('expand'));
       el.addEventListener('mouseleave', () => cursor.classList.remove('expand'));
+    });
+  } else if (cursor) {
+    cursor.style.display = 'none';
+  }
+
+  /* ═══════════════════════════════════════════════════
+     HAMBURGER MENU TOGGLE
+     ═══════════════════════════════════════════════════ */
+  const hamburger = document.getElementById('navHamburger');
+  const navLinks = document.getElementById('navLinks');
+
+  if (hamburger && navLinks) {
+    hamburger.addEventListener('click', () => {
+      hamburger.classList.toggle('active');
+      navLinks.classList.toggle('open');
+    });
+
+    // Close menu when a link is clicked
+    navLinks.querySelectorAll('a').forEach(link => {
+      link.addEventListener('click', () => {
+        hamburger.classList.remove('active');
+        navLinks.classList.remove('open');
+      });
     });
   }
 

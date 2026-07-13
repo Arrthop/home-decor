@@ -323,6 +323,165 @@
       color: rgba(255, 255, 255, 0.22);
       text-transform: uppercase;
     }
+
+    /* ═══════════════════════════════════════════════════
+       HERO RESPONSIVE — TABLET
+       ═══════════════════════════════════════════════════ */
+    @media (max-width: 1024px) {
+      .card-container {
+        width: 90vw;
+        max-width: 700px;
+        height: 300px;
+      }
+
+      .card-center {
+        width: 220px;
+        height: 300px;
+        left: calc(50% - 110px);
+        top: calc(50% - 150px);
+      }
+
+      .card-left {
+        width: 180px;
+        height: 240px;
+        left: calc(50% - 90px);
+        top: calc(50% - 120px);
+      }
+
+      .card-right {
+        width: 180px;
+        height: 240px;
+        left: calc(50% - 90px);
+        top: calc(50% - 120px);
+      }
+
+      .card-far-left {
+        width: 150px;
+        height: 200px;
+        left: calc(50% - 75px);
+        top: calc(50% - 100px);
+      }
+
+      .card-far-right {
+        width: 150px;
+        height: 200px;
+        left: calc(50% - 75px);
+        top: calc(50% - 100px);
+      }
+
+      .hero-logo {
+        max-width: 320px;
+      }
+    }
+
+    /* ═══════════════════════════════════════════════════
+       HERO RESPONSIVE — MOBILE
+       ═══════════════════════════════════════════════════ */
+    @media (max-width: 768px) {
+      .hero-section {
+        gap: 15px;
+      }
+
+      .card-container {
+        width: 92vw;
+        max-width: 400px;
+        height: 220px;
+      }
+
+      .card-center {
+        width: 150px;
+        height: 200px;
+        left: calc(50% - 75px);
+        top: calc(50% - 100px);
+      }
+
+      .card-left {
+        width: 120px;
+        height: 160px;
+        left: calc(50% - 60px);
+        top: calc(50% - 80px);
+      }
+
+      .card-right {
+        width: 120px;
+        height: 160px;
+        left: calc(50% - 60px);
+        top: calc(50% - 80px);
+      }
+
+      .card-far-left,
+      .card-far-right {
+        width: 100px;
+        height: 135px;
+        left: calc(50% - 50px);
+        top: calc(50% - 67px);
+      }
+
+      .hero-logo {
+        max-width: 260px;
+      }
+
+      .welcome-text {
+        font-size: 10px;
+        letter-spacing: 0.25em;
+        margin-bottom: -30px;
+      }
+
+      .hero-ambient-glow {
+        background:
+          radial-gradient(ellipse 300px 250px at 48% 55%, rgba(145, 128, 91, 0.15), transparent 70%),
+          radial-gradient(ellipse 250px 200px at 54% 45%, rgba(75, 78, 73, 0.1), transparent 65%);
+      }
+    }
+
+    /* ═══════════════════════════════════════════════════
+       HERO RESPONSIVE — SMALL MOBILE
+       ═══════════════════════════════════════════════════ */
+    @media (max-width: 480px) {
+      .card-container {
+        width: 95vw;
+        max-width: 320px;
+        height: 180px;
+      }
+
+      .card-center {
+        width: 120px;
+        height: 165px;
+        left: calc(50% - 60px);
+        top: calc(50% - 82px);
+      }
+
+      .card-left {
+        width: 100px;
+        height: 135px;
+        left: calc(50% - 50px);
+        top: calc(50% - 67px);
+      }
+
+      .card-right {
+        width: 100px;
+        height: 135px;
+        left: calc(50% - 50px);
+        top: calc(50% - 67px);
+      }
+
+      .card-far-left,
+      .card-far-right {
+        width: 80px;
+        height: 110px;
+        left: calc(50% - 40px);
+        top: calc(50% - 55px);
+      }
+
+      .hero-logo {
+        max-width: 200px;
+      }
+
+      .welcome-text {
+        font-size: 8px;
+        margin-bottom: -25px;
+      }
+    }
   </style>
 </head>
 
@@ -337,7 +496,12 @@
         <img src="Logo.png" alt="Home Decor"
           style="height: 25px; transform: scale(3.5); transform-origin: left center;">
       </a>
-      <nav class="nav-links">
+      <button class="nav-hamburger" id="navHamburger" aria-label="Toggle menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+      <nav class="nav-links" id="navLinks">
         <a href="#about">About</a>
         <a href="#collections">Collections</a>
         <a href="#inquiry" class="nav-btn">Enquire Now</a>
