@@ -34,12 +34,17 @@
   requestAnimationFrame(handleScrollUpdate);
 
   function resizeCanvas() {
+    var dpr = window.devicePixelRatio || 1;
     var w = window.innerWidth;
     var h = window.innerHeight;
-    canvas.width = w;
-    canvas.height = h;
+    // Use CSS pixels for display size
     canvas.style.width = w + "px";
     canvas.style.height = h + "px";
+    // Use device pixels for sharp rendering (capped at 2x to save memory on mobile)
+    var effectiveDpr = Math.min(dpr, 2);
+    canvas.width = w * effectiveDpr;
+    canvas.height = h * effectiveDpr;
+    ctx.setTransform(effectiveDpr, 0, 0, effectiveDpr, 0, 0);
     handleScrollUpdate();
   }
   resizeCanvas();
@@ -49,19 +54,37 @@
     if (!ready) return;
     var img = images[index];
     if (!img || !img.complete) return;
+    var dpr = Math.min(window.devicePixelRatio || 1, 2);
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    var cW = canvas.width, cH = canvas.height;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+    // Work in CSS pixel space (the dpr transform handles the rest)
+    var cW = canvas.width / dpr;
+    var cH = canvas.height / dpr;
     var iW = img.naturalWidth, iH = img.naturalHeight;
-    var scale = Math.max(cW / iW, cH / iH);
-    var drawW = iW * scale;
-    var drawH = iH * scale;
+    var vw = window.innerWidth;
 
-    // Correct the 1.13x vertical stretch in the source frames to make the Earth a perfect circle
-    drawH = drawH * 0.88;
-
-    var drawX = (cW - drawW) / 2;
-    var drawY = (cH - drawH) / 2;
-    ctx.drawImage(img, drawX, drawY, drawW, drawH);
+    if (vw <= 768) {
+      // ── MOBILE: use "contain" so the full earth is always visible ──
+      var scale = Math.min(cW / iW, cH / iH);
+      var drawW = iW * scale;
+      var drawH = iH * scale;
+      // No 0.88 squish on mobile — it pushes the earth off-screen on portrait
+      var drawX = (cW - drawW) / 2;
+      var drawY = (cH - drawH) / 2;
+      ctx.drawImage(img, drawX, drawY, drawW, drawH);
+    } else {
+      // ── DESKTOP: original cover + aspect-ratio correction (unchanged) ──
+      var scale = Math.max(cW / iW, cH / iH);
+      var drawW = iW * scale;
+      var drawH = iH * scale;
+      // Correct the 1.13x vertical stretch in the source frames
+      drawH = drawH * 0.88;
+      var drawX = (cW - drawW) / 2;
+      var drawY = (cH - drawH) / 2;
+      ctx.drawImage(img, drawX, drawY, drawW, drawH);
+    }
   }
 
   function handleScrollUpdate() {
