@@ -6,11 +6,15 @@
 
   // Detect mobile once at startup
   var isMobileDevice = window.innerWidth <= 768;
-  // On mobile, load every 3rd frame (80 frames ≈ 40MB instead of 240 ≈ 120MB)
+  // On mobile, load every 3rd frame from the compressed /mobile/ subfolder
+  // (81 frames × ~20KB = ~1.6MB vs 240 × ~500KB = ~120MB on desktop)
   var FRAME_SKIP = isMobileDevice ? 3 : 1;
 
   function framePath(index) {
     var padded = String(index).padStart(3, "0");
+    if (isMobileDevice) {
+      return FRAME_DIR + "/mobile/frame_" + padded + ".jpg";
+    }
     return FRAME_DIR + "/frame_" + padded + ".jpg";
   }
 
