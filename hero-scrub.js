@@ -3,19 +3,7 @@
 
   var TOTAL_FRAMES = 240;
   var FRAME_DIR = "hero_section_video-2_frames";
-
-  // Detect mobile once at startup
   var isMobileDevice = window.innerWidth <= 768;
-  // On mobile, load every 3rd frame from the compressed /mobile/ subfolder
-  var FRAME_SKIP = isMobileDevice ? 3 : 1;
-
-  function framePath(index) {
-    var padded = String(index).padStart(3, "0");
-    if (isMobileDevice) {
-      return FRAME_DIR + "/mobile/frame_" + padded + ".jpg";
-    }
-    return FRAME_DIR + "/frame_" + padded + ".jpg";
-  }
 
   var canvas = document.getElementById("heroCanvas");
   var ctx = canvas.getContext("2d");
@@ -27,144 +15,31 @@
   var cardFarLeft = document.querySelector(".card-far-left");
   var cardFarRight = document.querySelector(".card-far-right");
 
-  // Build the list of frame indices to load
-  var frameIndices = [];
-  for (var i = 1; i <= TOTAL_FRAMES; i += FRAME_SKIP) {
-    frameIndices.push(i);
-  }
-  if (frameIndices[frameIndices.length - 1] !== TOTAL_FRAMES) {
-    frameIndices.push(TOTAL_FRAMES);
-  }
-
-  var FRAME_COUNT = frameIndices.length;
   var images = [];
-  var lastDrawnIndex = -1;
+  var FRAME_COUNT = 0;
+  var loaderDone = !isMobileDevice; // Desktop: true immediately. Mobile: false until loaded.
 
-  // ══════════════════════════════════════════════════════
-  //  MOBILE: Loading screen with progress tracking
-  // ══════════════════════════════════════════════════════
-  if (isMobileDevice) {
-    var loadingScreen = document.getElementById("loadingScreen");
-    var progressBar = document.getElementById("loaderProgressBar");
-    var percentageText = document.getElementById("loaderPercentage");
-    var loadedCount = 0;
-    var loaderDismissed = false;
-
-    window.scrollTo(0, 0);
-
-    function dismissLoader() {
-      if (loaderDismissed) return;
-      loaderDismissed = true;
-      setTimeout(function () {
-        if (loadingScreen) loadingScreen.classList.add("hidden");
-        document.body.classList.remove("is-loading");
-        lastDrawnIndex = -1;
-        handleScrollUpdate();
-      }, 300);
-    }
-
-    function onFrameLoaded() {
-      loadedCount++;
-      var pct = Math.round((loadedCount / FRAME_COUNT) * 100);
-      if (progressBar) progressBar.style.width = pct + "%";
-      if (percentageText) percentageText.textContent = pct + "%";
-      if (loadedCount >= FRAME_COUNT) {
-        dismissLoader();
-      }
-    }
-
-    // Safety timeout: dismiss after 12s no matter what
-    setTimeout(function () {
-      if (!loaderDismissed) dismissLoader();
-    }, 12000);
-
-    // Preload frames with cache-safe handlers
-    for (var j = 0; j < frameIndices.length; j++) {
-      (function (idx) {
-        var img = new Image();
-        var counted = false;
-        function countOnce() {
-          if (counted) return;
-          counted = true;
-          onFrameLoaded();
-        }
-        img.onload = countOnce;
-        img.onerror = countOnce;
-        img.src = framePath(frameIndices[idx]);
-        if (img.complete) countOnce();
-        images.push(img);
-      })(j);
-    }
-
-  // ══════════════════════════════════════════════════════
-  //  DESKTOP: No loading screen — original progressive behavior
-  // ══════════════════════════════════════════════════════
-  } else {
-    // Immediately hide the loading screen and unlock scrolling
-    var loadingScreen = document.getElementById("loadingScreen");
-    if (loadingScreen) loadingScreen.classList.add("hidden");
-    document.body.classList.remove("is-loading");
-
-    // Load all frames progressively (original behavior)
-    for (var k = 0; k < frameIndices.length; k++) {
-      var img = new Image();
-      img.src = framePath(frameIndices[k]);
-      img.onload = function () {
-        handleScrollUpdate();
-      };
-      images.push(img);
-    }
-
-    requestAnimationFrame(handleScrollUpdate);
-  }
-
-  // ══════════════════════════════════════════════════════
-  //  CANVAS SIZING
-  // ══════════════════════════════════════════════════════
+  // ── Canvas sizing (same for both, original logic) ──
   function resizeCanvas() {
     var w = window.innerWidth;
     var h = window.innerHeight;
+    canvas.width = w;
+    canvas.height = h;
     canvas.style.width = w + "px";
     canvas.style.height = h + "px";
-
-    if (isMobileDevice) {
-      canvas.width = w;
-      canvas.height = h;
-      ctx.setTransform(1, 0, 0, 1, 0, 0);
-    } else {
-      var dpr = Math.min(window.devicePixelRatio || 1, 2);
-      canvas.width = w * dpr;
-      canvas.height = h * dpr;
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    }
-
-    lastDrawnIndex = -1;
     handleScrollUpdate();
   }
-  resizeCanvas();
-  window.addEventListener("resize", resizeCanvas);
 
-  // ══════════════════════════════════════════════════════
-  //  DRAW FRAME
-  // ══════════════════════════════════════════════════════
+  // ── Draw a single frame ──
   function drawFrame(index) {
-    if (index === lastDrawnIndex) return;
-    lastDrawnIndex = index;
-
     var img = images[index];
-    if (!img || !img.complete || img.naturalWidth === 0) return;
-
-    var dpr = isMobileDevice ? 1 : Math.min(window.devicePixelRatio || 1, 2);
-
-    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    if (!img || !img.complete) return;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-
-    var cW = canvas.width / dpr;
-    var cH = canvas.height / dpr;
+    var cW = canvas.width, cH = canvas.height;
     var iW = img.naturalWidth, iH = img.naturalHeight;
 
     if (isMobileDevice) {
+      // MOBILE: contain mode so full earth is visible on portrait
       var scale = Math.min(cW / iW, cH / iH);
       var drawW = iW * scale;
       var drawH = iH * scale;
@@ -172,6 +47,7 @@
       var drawY = (cH - drawH) / 2;
       ctx.drawImage(img, drawX, drawY, drawW, drawH);
     } else {
+      // DESKTOP: original cover + 0.88 aspect correction (unchanged)
       var scale = Math.max(cW / iW, cH / iH);
       var drawW = iW * scale;
       var drawH = iH * scale;
@@ -182,12 +58,9 @@
     }
   }
 
-  // ══════════════════════════════════════════════════════
-  //  SCROLL HANDLER
-  // ══════════════════════════════════════════════════════
+  // ── Scroll handler (shared) ──
   function handleScrollUpdate() {
-    // On mobile, block updates until loader is dismissed
-    if (isMobileDevice && typeof loaderDismissed !== "undefined" && !loaderDismissed) return;
+    if (!loaderDone) return;
 
     var scrollTop = window.scrollY || document.documentElement.scrollTop;
     var vw = window.innerWidth;
@@ -260,7 +133,90 @@
     }
   }
 
-  // ── Scroll listener ──
+  // ══════════════════════════════════════════════════════
+  //  INIT: Desktop vs Mobile setup
+  // ══════════════════════════════════════════════════════
+
+  if (!isMobileDevice) {
+    // ── DESKTOP: original behavior, no loading screen ──
+    var ls = document.getElementById("loadingScreen");
+    if (ls) ls.style.display = "none";
+
+    FRAME_COUNT = TOTAL_FRAMES;
+
+    for (var i = 1; i <= FRAME_COUNT; i++) {
+      var img = new Image();
+      img.src = FRAME_DIR + "/frame_" + String(i).padStart(3, "0") + ".jpg";
+      img.onload = function () { handleScrollUpdate(); };
+      images.push(img);
+    }
+
+    requestAnimationFrame(handleScrollUpdate);
+
+  } else {
+    // ── MOBILE: loading screen + compressed frames ──
+    document.body.classList.add("is-loading");
+    window.scrollTo(0, 0);
+
+    var loadingScreen = document.getElementById("loadingScreen");
+    var progressBar = document.getElementById("loaderProgressBar");
+    var percentageText = document.getElementById("loaderPercentage");
+    var loadedCount = 0;
+
+    // Build list of every 3rd frame
+    var frameIndices = [];
+    for (var m = 1; m <= TOTAL_FRAMES; m += 3) {
+      frameIndices.push(m);
+    }
+    if (frameIndices[frameIndices.length - 1] !== TOTAL_FRAMES) {
+      frameIndices.push(TOTAL_FRAMES);
+    }
+    FRAME_COUNT = frameIndices.length;
+
+    var dismissLoader = function () {
+      if (loaderDone) return;
+      loaderDone = true;
+      setTimeout(function () {
+        if (loadingScreen) loadingScreen.classList.add("hidden");
+        document.body.classList.remove("is-loading");
+        handleScrollUpdate();
+      }, 300);
+    };
+
+    var onFrameLoaded = function () {
+      loadedCount++;
+      var pct = Math.round((loadedCount / FRAME_COUNT) * 100);
+      if (progressBar) progressBar.style.width = pct + "%";
+      if (percentageText) percentageText.textContent = pct + "%";
+      if (loadedCount >= FRAME_COUNT) dismissLoader();
+    };
+
+    // Safety timeout
+    setTimeout(function () { if (!loaderDone) dismissLoader(); }, 12000);
+
+    // Load compressed mobile frames
+    for (var j = 0; j < frameIndices.length; j++) {
+      (function (idx) {
+        var img = new Image();
+        var counted = false;
+        var countOnce = function () {
+          if (counted) return;
+          counted = true;
+          onFrameLoaded();
+        };
+        img.onload = countOnce;
+        img.onerror = countOnce;
+        img.src = FRAME_DIR + "/mobile/frame_" + String(frameIndices[idx]).padStart(3, "0") + ".jpg";
+        if (img.complete) countOnce();
+        images.push(img);
+      })(j);
+    }
+  }
+
+  // Init canvas and start listening
+  resizeCanvas();
+  window.addEventListener("resize", resizeCanvas);
+
   var ticking = false;
   window.addEventListener("scroll", function () {
     if (!ticking) {
