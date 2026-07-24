@@ -29,7 +29,7 @@
   var progressBar = document.getElementById("loaderProgressBar");
   var percentageText = document.getElementById("loaderPercentage");
 
-  // Scroll to top and lock scrolling while loading
+  // Scroll to top while loading
   window.scrollTo(0, 0);
 
   // Build the list of frame indices to load
@@ -45,8 +45,20 @@
   var FRAME_COUNT = frameIndices.length;
   var images = [];
   var loadedCount = 0;
-  var allLoaded = false;
+  var loaderDismissed = false;
   var lastDrawnIndex = -1;
+
+  // ── Dismiss the loading screen ──
+  function dismissLoader() {
+    if (loaderDismissed) return;
+    loaderDismissed = true;
+    setTimeout(function () {
+      if (loadingScreen) loadingScreen.classList.add("hidden");
+      document.body.classList.remove("is-loading");
+      lastDrawnIndex = -1;
+      handleScrollUpdate();
+    }, 300);
+  }
 
   // ── Loading progress tracker ──
   function onFrameLoaded() {
@@ -57,25 +69,41 @@
     if (percentageText) percentageText.textContent = pct + "%";
 
     if (loadedCount >= FRAME_COUNT) {
-      allLoaded = true;
-      // Brief pause so the bar visually reaches 100%
-      setTimeout(function () {
-        if (loadingScreen) loadingScreen.classList.add("hidden");
-        document.body.classList.remove("is-loading");
-        // Draw the first frame immediately
-        lastDrawnIndex = -1;
-        handleScrollUpdate();
-      }, 500);
+      dismissLoader();
     }
   }
 
+  // ── Safety timeout: dismiss loader after 12s no matter what ──
+  setTimeout(function () {
+    if (!loaderDismissed) {
+      dismissLoader();
+    }
+  }, 12000);
+
   // ── Preload all frames ──
+  // IMPORTANT: Set onload/onerror BEFORE setting src to catch cached images
   for (var j = 0; j < frameIndices.length; j++) {
-    var img = new Image();
-    img.src = framePath(frameIndices[j]);
-    img.onload = onFrameLoaded;
-    img.onerror = onFrameLoaded; // count errors too so loader never gets stuck
-    images.push(img);
+    (function (idx) {
+      var img = new Image();
+      var counted = false;
+
+      function countOnce() {
+        if (counted) return;
+        counted = true;
+        onFrameLoaded();
+      }
+
+      img.onload = countOnce;
+      img.onerror = countOnce;
+      img.src = framePath(frameIndices[idx]);
+
+      // Handle images that loaded from cache before handlers attached
+      if (img.complete) {
+        countOnce();
+      }
+
+      images.push(img);
+    })(j);
   }
 
   // ── Canvas sizing ──
@@ -99,7 +127,7 @@
     }
 
     lastDrawnIndex = -1; // force redraw after resize
-    if (allLoaded) handleScrollUpdate();
+    if (loaderDismissed) handleScrollUpdate();
   }
   resizeCanvas();
   window.addEventListener("resize", resizeCanvas);
@@ -110,7 +138,7 @@
     lastDrawnIndex = index;
 
     var img = images[index];
-    if (!img || !img.complete) return;
+    if (!img || !img.complete || img.naturalWidth === 0) return;
 
     var dpr = isMobileDevice ? 1 : Math.min(window.devicePixelRatio || 1, 2);
 
@@ -147,7 +175,7 @@
 
   // ── Main scroll handler ──
   function handleScrollUpdate() {
-    if (!allLoaded) return; // wait for loading screen to finish
+    if (!loaderDismissed) return;
 
     var scrollTop = window.scrollY || document.documentElement.scrollTop;
     var vw = window.innerWidth;
@@ -186,25 +214,21 @@
     var yNearL, yNearR, yFarL, yFarR;
 
     if (vw <= 480) {
-      // Small mobile
       spreadNear = vw * 0.17;
       spreadFar = vw * 0.31;
       rotL = -3; rotR = 3; rotFL = -5; rotFR = 5;
       yNearL = 10; yNearR = 8; yFarL = 15; yFarR = 12;
     } else if (vw <= 768) {
-      // Mobile
       spreadNear = vw * 0.18;
       spreadFar = vw * 0.33;
       rotL = -4; rotR = 4; rotFL = -7; rotFR = 6;
       yNearL = 15; yNearR = 10; yFarL = 25; yFarR = 20;
     } else if (vw <= 1024) {
-      // Tablet
       spreadNear = vw * 0.22;
       spreadFar = vw * 0.36;
       rotL = -6; rotR = 5; rotFL = -10; rotFR = 9;
       yNearL = 20; yNearR = 12; yFarL = 30; yFarR = 28;
     } else {
-      // Desktop
       spreadNear = 300;
       spreadFar = 560;
       rotL = -8; rotR = 6; rotFL = -14; rotFR = 11;
