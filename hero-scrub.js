@@ -17,7 +17,7 @@
 
   var images = [];
   var FRAME_COUNT = 0;
-  var loaderDone = !isMobileDevice; // Desktop: true immediately. Mobile: false until loaded.
+  var loaderDone = false; // Both desktop and mobile show loader until frames are ready.
 
   // ── Canvas sizing (same for both, original logic) ──
   function resizeCanvas() {
@@ -137,12 +137,39 @@
   //  INIT: Desktop vs Mobile setup
   // ══════════════════════════════════════════════════════
 
-  if (!isMobileDevice) {
-    // ── DESKTOP: original behavior, no loading screen ──
-    var ls = document.getElementById("loadingScreen");
-    if (ls) ls.style.display = "none";
+  // ── Shared loading screen references ──
+  var loadingScreen = document.getElementById("loadingScreen");
+  var progressBar = document.getElementById("loaderProgressBar");
+  var percentageText = document.getElementById("loaderPercentage");
+  var loadedCount = 0;
 
-    // ── DESKTOP: skip every other frame for faster load ──
+  var dismissLoader = function () {
+    if (loaderDone) return;
+    loaderDone = true;
+    setTimeout(function () {
+      if (loadingScreen) loadingScreen.classList.add("hidden");
+      document.body.classList.remove("is-loading");
+      handleScrollUpdate();
+    }, 300);
+  };
+
+  var onFrameLoaded = function () {
+    loadedCount++;
+    var pct = Math.round((loadedCount / FRAME_COUNT) * 100);
+    if (progressBar) progressBar.style.width = pct + "%";
+    if (percentageText) percentageText.textContent = pct + "%";
+    if (loadedCount >= FRAME_COUNT) dismissLoader();
+  };
+
+  // Lock scroll while loading
+  document.body.classList.add("is-loading");
+  window.scrollTo(0, 0);
+
+  // Safety timeout
+  setTimeout(function () { if (!loaderDone) dismissLoader(); }, 12000);
+
+  if (!isMobileDevice) {
+    // ── DESKTOP: loading screen + skip every other frame ──
     var desktopFrameIndices = [];
     for (var i = 1; i <= TOTAL_FRAMES; i += 2) {
       desktopFrameIndices.push(i);
@@ -153,25 +180,24 @@
     FRAME_COUNT = desktopFrameIndices.length;
 
     for (var i = 0; i < desktopFrameIndices.length; i++) {
-      var img = new Image();
-      img.src = FRAME_DIR + "/frame_" + String(desktopFrameIndices[i]).padStart(3, "0") + ".jpg";
-      img.onload = function () { handleScrollUpdate(); };
-      images.push(img);
+      (function (idx) {
+        var img = new Image();
+        var counted = false;
+        var countOnce = function () {
+          if (counted) return;
+          counted = true;
+          onFrameLoaded();
+        };
+        img.onload = countOnce;
+        img.onerror = countOnce;
+        img.src = FRAME_DIR + "/frame_" + String(desktopFrameIndices[idx]).padStart(3, "0") + ".jpg";
+        if (img.complete) countOnce();
+        images.push(img);
+      })(i);
     }
 
-    requestAnimationFrame(handleScrollUpdate);
-
   } else {
-    // ── MOBILE: loading screen + compressed frames ──
-    document.body.classList.add("is-loading");
-    window.scrollTo(0, 0);
-
-    var loadingScreen = document.getElementById("loadingScreen");
-    var progressBar = document.getElementById("loaderProgressBar");
-    var percentageText = document.getElementById("loaderPercentage");
-    var loadedCount = 0;
-
-    // Build list of every 3rd frame
+    // ── MOBILE: compressed frames (every 3rd) ──
     var frameIndices = [];
     for (var m = 1; m <= TOTAL_FRAMES; m += 3) {
       frameIndices.push(m);
@@ -181,28 +207,6 @@
     }
     FRAME_COUNT = frameIndices.length;
 
-    var dismissLoader = function () {
-      if (loaderDone) return;
-      loaderDone = true;
-      setTimeout(function () {
-        if (loadingScreen) loadingScreen.classList.add("hidden");
-        document.body.classList.remove("is-loading");
-        handleScrollUpdate();
-      }, 300);
-    };
-
-    var onFrameLoaded = function () {
-      loadedCount++;
-      var pct = Math.round((loadedCount / FRAME_COUNT) * 100);
-      if (progressBar) progressBar.style.width = pct + "%";
-      if (percentageText) percentageText.textContent = pct + "%";
-      if (loadedCount >= FRAME_COUNT) dismissLoader();
-    };
-
-    // Safety timeout
-    setTimeout(function () { if (!loaderDone) dismissLoader(); }, 12000);
-
-    // Load compressed mobile frames
     for (var j = 0; j < frameIndices.length; j++) {
       (function (idx) {
         var img = new Image();
