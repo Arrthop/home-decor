@@ -142,11 +142,19 @@
     var ls = document.getElementById("loadingScreen");
     if (ls) ls.style.display = "none";
 
-    FRAME_COUNT = TOTAL_FRAMES;
+    // ── DESKTOP: skip every other frame for faster load ──
+    var desktopFrameIndices = [];
+    for (var i = 1; i <= TOTAL_FRAMES; i += 2) {
+      desktopFrameIndices.push(i);
+    }
+    if (desktopFrameIndices[desktopFrameIndices.length - 1] !== TOTAL_FRAMES) {
+      desktopFrameIndices.push(TOTAL_FRAMES);
+    }
+    FRAME_COUNT = desktopFrameIndices.length;
 
-    for (var i = 1; i <= FRAME_COUNT; i++) {
+    for (var i = 0; i < desktopFrameIndices.length; i++) {
       var img = new Image();
-      img.src = FRAME_DIR + "/frame_" + String(i).padStart(3, "0") + ".jpg";
+      img.src = FRAME_DIR + "/frame_" + String(desktopFrameIndices[i]).padStart(3, "0") + ".jpg";
       img.onload = function () { handleScrollUpdate(); };
       images.push(img);
     }
