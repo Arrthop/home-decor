@@ -39,8 +39,8 @@
     var iW = img.naturalWidth, iH = img.naturalHeight;
 
     if (isMobileDevice) {
-      // MOBILE: contain mode so full earth is visible on portrait
-      var scale = Math.min(cW / iW, cH / iH);
+      // MOBILE: cover mode so earth fills the entire screen on every phone
+      var scale = Math.max(cW / iW, cH / iH);
       var drawW = iW * scale;
       var drawH = iH * scale;
       var drawX = (cW - drawW) / 2;
