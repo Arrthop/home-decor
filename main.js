@@ -167,7 +167,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const subject = formData.get('subject');
       const message = formData.get('message');
       
-      const text = `*New Project Inquiry*
+      const text = `*New Product Inquiry*
 *Name:* ${name}
 *Email:* ${email}
 *Subject:* ${subject || 'N/A'}
