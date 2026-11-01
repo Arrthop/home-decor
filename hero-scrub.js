@@ -190,7 +190,7 @@
         };
         img.onload = countOnce;
         img.onerror = countOnce;
-        img.src = FRAME_DIR + "/frame_" + String(desktopFrameIndices[idx]).padStart(3, "0") + ".jpg";
+        img.src = FRAME_DIR + "/frame_" + String(desktopFrameIndices[idx]).padStart(3, "0") + ".webp";
         if (img.complete) countOnce();
         images.push(img);
       })(i);
@@ -218,7 +218,7 @@
         };
         img.onload = countOnce;
         img.onerror = countOnce;
-        img.src = FRAME_DIR + "/mobile/frame_" + String(frameIndices[idx]).padStart(3, "0") + ".jpg";
+        img.src = FRAME_DIR + "/mobile/frame_" + String(frameIndices[idx]).padStart(3, "0") + ".webp";
         if (img.complete) countOnce();
         images.push(img);
       })(j);
