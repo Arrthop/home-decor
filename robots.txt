@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://homedecorco.in/sitemap.xml
